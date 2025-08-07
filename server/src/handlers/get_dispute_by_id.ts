@@ -1,19 +1,23 @@
 
+import { db } from '../db';
+import { disputesTable } from '../db/schema';
 import { type GetDisputeByIdInput, type Dispute } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const getDisputeById = async (input: GetDisputeByIdInput): Promise<Dispute | null> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching a specific dispute case by ID
-    // including related parties and hearing history.
-    return Promise.resolve({
-        id: input.id,
-        dispute_number: 'SAMPLE-001',
-        dispute_type: 'sengketa_informasi',
-        registration_date: new Date(),
-        description: 'Sample dispute',
-        status: 'baru',
-        created_by: 1,
-        created_at: new Date(),
-        updated_at: new Date()
-    } as Dispute);
+  try {
+    const results = await db.select()
+      .from(disputesTable)
+      .where(eq(disputesTable.id, input.id))
+      .execute();
+
+    if (results.length === 0) {
+      return null;
+    }
+
+    return results[0];
+  } catch (error) {
+    console.error('Get dispute by ID failed:', error);
+    throw error;
+  }
 };

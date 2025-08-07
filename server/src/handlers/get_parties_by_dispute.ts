@@ -1,9 +1,19 @@
 
+import { db } from '../db';
+import { partiesTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { type GetPartiesByDisputeInput, type Party } from '../schema';
 
 export const getPartiesByDispute = async (input: GetPartiesByDisputeInput): Promise<Party[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all parties involved in a specific
-    // dispute case, including their roles and contact information.
-    return [];
+  try {
+    const results = await db.select()
+      .from(partiesTable)
+      .where(eq(partiesTable.dispute_id, input.dispute_id))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to get parties by dispute:', error);
+    throw error;
+  }
 };
